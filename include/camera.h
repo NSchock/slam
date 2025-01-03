@@ -12,6 +12,7 @@ public:
   double baseline_;
 
   Camera(const std::array<double, 12> &rectified_camera_data);
+
   Camera(const Eigen::Matrix3d &intrinsic_matrix,
          const Sophus::SE3d &extrinsic_matrix)
       : intrinsic_matrix_(intrinsic_matrix),

@@ -21,7 +21,7 @@ bool Slam::read_calib_data() {
       iss >> raw_camera[i];
     }
 
-    cameras_.insert({camera_name, Camera(raw_camera)});
+    cameras_.insert({camera_name, std::make_shared<Camera>(raw_camera)});
   }
   return !cameras_.empty();
 }

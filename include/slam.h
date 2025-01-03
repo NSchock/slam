@@ -16,14 +16,14 @@ public:
 
   bool read_calib_data();
 
-  Camera get_camera(std::string camera_name) {
+  std::shared_ptr<Camera> get_camera(std::string camera_name) {
     return cameras_.at(camera_name);
   }
 
 private:
   std::string dataset_path_;
   int current_image_index_ = 0;
-  std::unordered_map<std::string, Camera> cameras_;
+  std::unordered_map<std::string, std::shared_ptr<Camera>> cameras_;
 
   std::shared_ptr<Frontend> frontend_;
   std::shared_ptr<Backend> backend_;
