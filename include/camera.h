@@ -9,7 +9,7 @@ class Camera {
 public:
   Eigen::Matrix3d intrinsic_matrix_;
   Sophus::SE3d extrinsic_matrix_;
-  double baseline_;
+  double baseline_; // the distance from the given camera to the left camera
 
   Camera(const std::array<double, 12> &rectified_camera_data);
 
