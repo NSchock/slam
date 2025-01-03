@@ -1,11 +1,10 @@
-#include "dataset.h"
+#include "slam.h"
 #include <fstream>
 #include <iostream>
-#include <memory>
-#include <sstream>
-#include <string>
 
-bool Dataset::read_calib_data() {
+bool Slam::initialize() { return true; }
+
+bool Slam::read_calib_data() {
   std::ifstream fin(dataset_path_ + "/calib.txt");
   std::string line;
   while (std::getline(fin, line)) {
@@ -22,7 +21,7 @@ bool Dataset::read_calib_data() {
       iss >> raw_camera[i];
     }
 
-    cameras_.insert({camera_name, std::make_shared<Camera>(raw_camera)});
+    cameras_.insert({camera_name, Camera(raw_camera)});
   }
-  return true;
+  return !cameras_.empty();
 }

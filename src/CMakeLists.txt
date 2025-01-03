@@ -1,5 +1,5 @@
 add_library(slam SHARED
-        dataset.cpp
+        slam.cpp
         camera.cpp
 )
 

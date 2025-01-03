@@ -1,4 +1,4 @@
-#include "dataset.h"
+#include "slam.h"
 #include <Eigen/Core>
 #include <opencv2/calib3d.hpp>
 #include <opencv2/highgui.hpp>
@@ -6,10 +6,10 @@
 #include <opencv2/opencv.hpp>
 
 int main(int argc, char **argv) {
-  Dataset dataset("./dataset/sequences/00");
-  dataset.read_calib_data();
-  Camera left_cam = *dataset.get_camera("P0");
-  Camera right_cam = *dataset.get_camera("P1");
+  Slam slam("./dataset/sequences/00");
+  slam.read_calib_data();
+  Camera left_cam = slam.get_camera("P0");
+  Camera right_cam = slam.get_camera("P1");
   std::cout << "Left camera data\n";
   std::cout << "Intrinsic matrix:\n" << left_cam.intrinsic_matrix_ << "\n";
   std::cout << "Extrinsic matrix:\n"
