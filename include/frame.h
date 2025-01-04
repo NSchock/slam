@@ -8,15 +8,12 @@
 
 class Frame {
 public:
-  cv::Mat image_left_, image_right_;
+  std::shared_ptr<Image> image_left_, image_right_;
+  Sophus::SE3d pose_;
 
   Frame(cv::Mat image_left, cv::Mat image_right)
-      : image_left_(std::move(image_left)),
-        image_right_(std::move(image_right)) {}
-
-private:
-  std::vector<std::shared_ptr<Feature>> features_left_, features_right_;
-  Sophus::SE3d pose_;
+      : image_left_{std::make_shared<Image>(image_left)},
+        image_right_{std::make_shared<Image>(image_right)} {}
 };
 
 #endif
