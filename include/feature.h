@@ -5,16 +5,20 @@
 #include <opencv2/core/mat.hpp>
 #include <opencv2/core/types.hpp>
 
-struct Image;
+class Landmark;
 
-struct Feature {
+class Feature {
+public:
+  const unsigned long id_;
   cv::KeyPoint keypoint_;
   cv::Mat descriptor_;
-  std::weak_ptr<Image> image_;
+  std::weak_ptr<Landmark> landmark_;
 
-  Feature(cv::KeyPoint keypoint, cv::Mat descriptor,
-          std::shared_ptr<Image> image)
-      : keypoint_(keypoint), descriptor_(descriptor), image_(image) {}
+  Feature(cv::KeyPoint keypoint, cv::Mat descriptor)
+      : id_{feature_id_++}, keypoint_{keypoint}, descriptor_{descriptor} {}
+
+private:
+  inline static unsigned long feature_id_ = 0;
 };
 
 #endif

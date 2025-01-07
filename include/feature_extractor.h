@@ -22,7 +22,7 @@ public:
    * Detects the features in the given image.
    * Features are saved in the Image object.
    */
-  void extract_features(std::shared_ptr<Image> image) const;
+  void extract_features(Image &image) const;
 
 private:
   cv::Ptr<cv::FeatureDetector> detector_{cv::ORB::create()};

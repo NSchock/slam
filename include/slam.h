@@ -6,7 +6,6 @@
 #include "frontend.h"
 #include "map.h"
 #include "viewer.h"
-#include <iostream>
 #include <memory>
 
 class Slam {
@@ -33,14 +32,9 @@ public:
   bool step();
 
   /**
-   * Run the SLAM system
+   * Run the SLAM system.
    */
-  void run() {
-    initialize();
-    while (step()) {
-      std::cout << "Current frame: " << current_frame_index_ << "\n";
-    }
-  }
+  void run();
 
 private:
   std::string dataset_path_;
@@ -52,7 +46,7 @@ private:
   std::shared_ptr<Map> map_;
   std::shared_ptr<Viewer> viewer_;
 
-  bool initialized = false;
+  bool initialized_ = false;
 };
 
 #endif

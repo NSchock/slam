@@ -17,6 +17,10 @@ public:
          const Sophus::SE3d &extrinsic_matrix)
       : intrinsic_matrix_(intrinsic_matrix),
         extrinsic_matrix_(extrinsic_matrix) {}
+
+  Eigen::Matrix<double, 3, 4> projection_matrix() const {
+    return intrinsic_matrix_ * extrinsic_matrix_.matrix3x4();
+  }
 };
 
 #endif

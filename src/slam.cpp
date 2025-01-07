@@ -6,6 +6,7 @@
 #include <memory>
 #include <opencv2/core/mat.hpp>
 #include <opencv2/imgcodecs.hpp>
+#include <opencv2/opencv.hpp>
 
 bool Slam::read_calib_data() {
   std::ifstream fin(dataset_path_ + "/calib.txt");
@@ -30,16 +31,17 @@ bool Slam::read_calib_data() {
 }
 
 void Slam::initialize() {
-  if (initialized || !read_calib_data()) {
+  if (initialized_ || !read_calib_data()) {
     return;
   }
 
-  frontend_ = std::make_shared<Frontend>();
-  backend_ = std::make_shared<Backend>();
+  frontend_ = std::make_shared<Frontend>(cameras_["P0"], cameras_["P1"]);
+  // backend_ = std::make_shared<Backend>();
   map_ = std::make_shared<Map>();
-  viewer_ = std::make_shared<Viewer>();
+  // viewer_ = std::make_shared<Viewer>();
 
-  initialized = true;
+  frontend_->set_map(map_);
+  initialized_ = true;
 }
 
 bool Slam::step() {
@@ -61,9 +63,16 @@ bool Slam::step() {
     return false;
   }
 
-  std::shared_ptr<Frame> frame =
-      std::make_shared<Frame>(left_image, right_image);
+  std::shared_ptr<Frame> frame = std::make_shared<Frame>(
+      left_image, right_image, cameras_["P0"], cameras_["P1"]);
 
   current_frame_index_++;
   return frontend_->add_frame(frame);
 }
+
+void Slam::run() {
+  initialize();
+  while (step()) {
+    std::cout << "Current frame: " << current_frame_index_ << "\n";
+  }
+};
