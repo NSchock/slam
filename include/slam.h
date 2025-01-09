@@ -47,6 +47,8 @@ private:
   std::shared_ptr<Viewer> viewer_;
 
   bool initialized_ = false;
+
+  std::vector<Sophus::SE3d> poses_;
 };
 
 #endif

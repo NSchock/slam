@@ -41,6 +41,10 @@ public:
    * Estimates the pose of the current frame based on the left image's features
    * and corresponding landmarks.
    *
+   * Optional parameter relative_motion keeps track of the relative motion
+   * between current and previous frame, useful for initial estimates of current
+   * pose.
+   *
    * Modifies the pose_ member variable
    *
    * Implicitly requires that these left image features have been extracted and
@@ -48,7 +52,7 @@ public:
    * previous frame's left image features/landmarks, or by matching with right
    * image features and triangulating).
    */
-  int estimate_motion();
+  int estimate_motion(Sophus::SE3d relative_motion = Sophus::SE3d());
 
   std::vector<std::shared_ptr<Feature>> left_features() const {
     return image_left_.features();
@@ -63,6 +67,19 @@ public:
   bool has_right_features() const { return image_right_.has_features(); }
 
   bool has_matched_features() const { return !matches_.empty(); }
+
+  /**
+   * The frame's current position in the world.
+   * This is represented by an SE3 matrix giving the transformation from world
+   * to camera coordinates.
+   */
+  Sophus::SE3d pose() const { return pose_; }
+
+  /**
+   * The inverse of the pose. This gives the transformation from camera to world
+   * coordinates.
+   */
+  Sophus::SE3d pose_inverse() const { return pose_.inverse(); }
 
 private:
   inline static unsigned long frame_id_ = 0;

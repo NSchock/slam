@@ -25,8 +25,8 @@ public:
   void extract_features(Image &image) const;
 
 private:
-  cv::Ptr<cv::FeatureDetector> detector_{cv::ORB::create()};
-  cv::Ptr<cv::DescriptorExtractor> descriptor_extractor_{cv::ORB::create()};
+  cv::Ptr<cv::FeatureDetector> detector_{cv::ORB::create(1000)};
+  cv::Ptr<cv::DescriptorExtractor> descriptor_extractor_{cv::ORB::create(1000)};
 };
 
 #endif

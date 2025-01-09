@@ -5,10 +5,12 @@
 #include "feature_matcher.h"
 #include "frame.h"
 #include "map.h"
+#include "viewer.h"
 #include <memory>
 #include <opencv2/core/base.hpp>
 #include <opencv2/core/types.hpp>
 #include <opencv2/features2d.hpp>
+#include <sophus/se3.hpp>
 
 enum class FrontendStatus { Init, Tracking, Lost };
 
@@ -24,6 +26,10 @@ public:
         camera_right_{std::move(camera_right)} {}
 
   void set_map(std::shared_ptr<Map> map) { map_ = std::move(map); }
+
+  void set_viewer(std::shared_ptr<Viewer> viewer) {
+    viewer_ = std::move(viewer);
+  }
 
   /**
    * Processes the given frame as the next frame in the system.
@@ -54,6 +60,12 @@ public:
   void track();
 
   /**
+   * Estimate the motion of the current frame, and return whether the estimate
+   * is good enough to include the frame.
+   */
+  bool is_valid_frame(int num_inliers, Sophus::SE3d rel_motion);
+
+  /**
    * Inserts current frame as new keyframe for the map.
    * This consists of extracting/matching features from the left and right
    * image, triangulating based on these matches, and inserting the frame and
@@ -71,10 +83,16 @@ private:
 
   std::shared_ptr<Frame> current_frame_, prev_frame_;
 
+  Sophus::SE3d relative_motion_;
+
   std::shared_ptr<Map> map_;
+  std::shared_ptr<Viewer> viewer_;
 
   int num_features_for_keyframe_ = 50;
   int num_features_tracking_bad_ = 20;
+
+  int num_frames_lost_ = 0;
+  int num_frames_lost_allowed_ = 30;
 };
 
 #endif

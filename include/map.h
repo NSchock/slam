@@ -43,7 +43,7 @@ public:
    */
   void cleanup_landmarks();
 
-private:
+public:
   std::unordered_map<unsigned long, std::shared_ptr<Frame>> keyframes_;
   std::unordered_map<unsigned long, std::shared_ptr<Frame>> active_keyframes_;
   std::unordered_map<unsigned long, std::shared_ptr<Landmark>> landmarks_;

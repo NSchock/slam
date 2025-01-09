@@ -8,6 +8,7 @@ add_library(slam SHARED
         landmark.cpp
         map.cpp
         slam.cpp
+        viewer.cpp
 )
 
 target_link_libraries(slam
