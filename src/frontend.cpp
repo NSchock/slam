@@ -60,6 +60,7 @@ void Frontend::track() {
     }
     return;
   }
+  num_frames_lost_ = 0;
   relative_motion_ = tmp_relative_motion_;
   if (num_inliers < num_features_for_keyframe_) {
     insert_keyframe();
