@@ -25,11 +25,15 @@ include_directories(${Pangolin_INCLUDE_DIRS})
 find_package(Sophus CONFIG REQUIRED)
 include_directories(${Sophus_INCLUDE_DIRS})
 
+find_package(G2O CONFIG REQUIRED)
+include_directories(${G2O_INCLUDE_DIRS})
+
 set(THIRD_PARTY_LIBS
         ${OpenCV_LIBS}
         Sophus::Sophus
         ${Pangolin_LIBRARIES}# GL GLU GLEW glut
         Eigen3::Eigen
+        g2o::core g2o::stuff g2o::types_sba
         )
 
 enable_testing()

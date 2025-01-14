@@ -19,10 +19,10 @@ public:
         descriptor_extractor_(std::move(descriptor_extractor)) {}
 
   /**
-   * Detects the features in the given image.
-   * Features are saved in the Image object.
+   * Detects and returns the features in the given image.
    */
-  void extract_features(Image &image) const;
+  std::vector<std::shared_ptr<Feature>>
+  extract_features(const Image &image) const;
 
 private:
   cv::Ptr<cv::FeatureDetector> detector_{cv::ORB::create(1000)};

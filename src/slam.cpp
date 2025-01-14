@@ -88,10 +88,9 @@ bool Slam::step() {
     return false;
   }
 
-  std::shared_ptr<Frame> frame = std::make_shared<Frame>(
-      left_image, right_image, cameras_["P0"], cameras_["P1"]);
+  auto frame = std::make_shared<Frame>(left_image, right_image);
 
-  frame->pose_ = poses_[current_frame_index_];
+  // frame->set_pose_world_to_camera(poses_[current_frame_index_]);
 
   std::cout << "Current frame: " << current_frame_index_ << "\n";
   std::cout << "Pose: " << poses_[current_frame_index_].matrix3x4() << "\n";

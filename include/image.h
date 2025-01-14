@@ -2,11 +2,16 @@
 #define IMAGE_H
 
 #include "feature.h"
+#include <memory>
 #include <opencv2/core/mat.hpp>
 #include <opencv2/core/types.hpp>
 
-class Image {
+class Frame;
+
+class Image : public std::enable_shared_from_this<Image> {
 public:
+  std::weak_ptr<Frame> frame_;
+
   explicit Image(cv::Mat mat) : mat_(mat) {}
 
   /**
@@ -32,7 +37,7 @@ public:
   /**
    * Set the image features based on the passsed in keypoints and descriptors.
    */
-  void set_features(std::vector<cv::KeyPoint> keypoints, cv::Mat descriptors);
+  void set_features(const std::vector<std::shared_ptr<Feature>> &features);
 
   /**
    * Returns whether the image's features have been computed.

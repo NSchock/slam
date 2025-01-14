@@ -104,8 +104,6 @@ void Viewer::draw() {
 
 void Viewer::draw_frame(std::shared_ptr<Frame> frame,
                         const std::array<float, 3> color) {
-  auto pose_inverse = current_frame_->pose_inverse();
-
   const float sz = 1.0;
   const int line_width = 2.0;
   const float fx = 400;
@@ -116,7 +114,7 @@ void Viewer::draw_frame(std::shared_ptr<Frame> frame,
   const float height = 768;
 
   glPushMatrix();
-  glMultMatrixd(pose_inverse.matrix().data());
+  glMultMatrixd(current_frame_->pose_camera_to_world().matrix().data());
   glColor3f(color[0], color[1], color[2]);
 
   glLineWidth(line_width);
@@ -147,9 +145,7 @@ void Viewer::draw_frame(std::shared_ptr<Frame> frame,
 }
 
 void Viewer::follow_current_frame(pangolin::OpenGlRenderState &vis_camera) {
-  // pose_inverse = mapping from camera to world coordinates
-  auto pose_inverse = current_frame_->pose_inverse();
-  pangolin::OpenGlMatrix m(pose_inverse.matrix());
+  pangolin::OpenGlMatrix m(current_frame_->pose_camera_to_world().matrix());
   vis_camera.Follow(m, true);
 }
 

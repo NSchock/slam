@@ -1,6 +1,7 @@
 #ifndef FRONTEND_H
 #define FRONTEND_H
 
+#include "camera.h"
 #include "feature_extractor.h"
 #include "feature_matcher.h"
 #include "frame.h"
@@ -72,6 +73,13 @@ public:
    * resulting landmarks into the map.
    */
   void insert_keyframe();
+
+  std::pair<Sophus::SE3d, std::vector<int>>
+  estimate_motion(const std::vector<cv::Point3f> &landmarks,
+                  const std::vector<cv::Point2f> &features,
+                  Sophus::SE3d relative_motion);
+
+  void triangulate();
 
 private:
   std::shared_ptr<Camera> camera_left_, camera_right_;

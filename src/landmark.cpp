@@ -2,10 +2,10 @@
 #include "feature.h"
 #include <memory>
 
-void Landmark::add_observation(std::shared_ptr<Feature> feature) {
-  observations_[feature->id_] = feature;
+void Landmark::add_observation(std::shared_ptr<Observation> observation) {
+  observations_[observation->id_] = observation;
 }
 
-void Landmark::remove_observation(std::shared_ptr<Feature> feature) {
-  observations_.erase(feature->id_);
+void Landmark::remove_observation(std::shared_ptr<Observation> observation) {
+  observations_.erase(observation->id_);
 }

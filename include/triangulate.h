@@ -4,7 +4,6 @@
 #include <Eigen/Core>
 #include <Eigen/SVD>
 #include <Eigen/src/Core/util/Constants.h>
-#include <iostream>
 #include <opencv2/core/eigen.hpp>
 #include <opencv2/core/types.hpp>
 
@@ -14,13 +13,8 @@ using Point2 = cv::Point2f;
 /**
  * Triangulate image points from two cameras to obtain the corresponding 3d
  * point.
- *
- * TODO: verify this works correctly---if I pass in full projection matrices
- * (intrinsic * extrinsic), and points calculated on images, does it give
- * correct answer? Or should I convert as in slambook?
- * Also should I check result is valid, e.g., that z coordinate is positive?
  */
-inline std::pair<Eigen::Vector4d, bool>
+inline std::pair<Eigen::Vector3d, bool>
 triangulate_points(const Mat34 &proj_left, const Mat34 &proj_right,
                    const Point2 &point_left, const Point2 &point_right) {
   Eigen::Matrix4d A;
@@ -34,18 +28,12 @@ triangulate_points(const Mat34 &proj_left, const Mat34 &proj_right,
 
   auto triangulated_point =
       (svd.matrixV().col(3) / svd.matrixV()(3, 3)).head<3>();
-  // std::cout << "triangulated point: " << triangulated_point << "\n";
-  // std::cout << "homogenous: " << svd.matrixV().col(3) << "\n";
-  // std::cout << "V: " << svd.matrixV() << "\n";
-  // std::cout << "singular values: " << svd.singularValues() << "\n";
-  //
-  // okay, here's where the problem occurs: goes straight, then turns right,
-  // then turns left. At the right turn, it messes up but corrects itself. At
-  // the left turn, it irreparably messes up.
-  // why is my triangulated point the negative of opencv's?
-  return {svd.matrixV().col(3),
+  // TODO: why is my triangulated_point the negative of OpenCV's?
+
+  return {triangulated_point,
           triangulated_point.z() > 0 &&
               svd.singularValues()[3] / svd.singularValues()[2] < 1e-2};
+  // return {triangulated_point, true};
 }
 
 #endif
