@@ -24,9 +24,16 @@ public:
   std::vector<std::shared_ptr<Feature>>
   extract_features(const Image &image) const;
 
+  /**
+   * Adaptive nonmaximal suppressional: adjust feature points to achieve a more
+   * even distribution.
+   */
+  std::vector<std::shared_ptr<Feature>> adaptive_nonmaximal_suppression(
+      std::vector<std::shared_ptr<Feature>> &features, int num_to_keep) const;
+
 private:
-  cv::Ptr<cv::FeatureDetector> detector_{cv::ORB::create(1000)};
-  cv::Ptr<cv::DescriptorExtractor> descriptor_extractor_{cv::ORB::create(1000)};
+  cv::Ptr<cv::FeatureDetector> detector_{cv::ORB::create(3000)};
+  cv::Ptr<cv::DescriptorExtractor> descriptor_extractor_{cv::ORB::create()};
 };
 
 #endif

@@ -45,8 +45,10 @@ void Frontend::track() {
   current_frame_->set_pose_world_to_camera(relative_motion_ *
                                            prev_frame_->pose_world_to_camera());
 
-  current_frame_->image_left_.set_features(
-      extractor_.extract_features(current_frame_->image_left_));
+  auto left_features = extractor_.extract_features(current_frame_->image_left_);
+  left_features =
+      extractor_.adaptive_nonmaximal_suppression(left_features, 500);
+  current_frame_->image_left_.set_features(left_features);
 
   auto matches = matcher_.match_features(prev_frame_->image_left_,
                                          current_frame_->image_left_);
@@ -106,12 +108,18 @@ bool Frontend::is_valid_frame(int num_inliers, Sophus::SE3d rel_motion) {
 
 void Frontend::insert_keyframe() {
   if (!current_frame_->has_left_features()) {
-    current_frame_->image_left_.set_features(
-        extractor_.extract_features(current_frame_->image_left_));
+    auto left_features =
+        extractor_.extract_features(current_frame_->image_left_);
+    left_features =
+        extractor_.adaptive_nonmaximal_suppression(left_features, 500);
+    current_frame_->image_left_.set_features(left_features);
   }
   if (!current_frame_->has_right_features()) {
-    current_frame_->image_right_.set_features(
-        extractor_.extract_features(current_frame_->image_right_));
+    auto right_features =
+        extractor_.extract_features(current_frame_->image_right_);
+    right_features =
+        extractor_.adaptive_nonmaximal_suppression(right_features, 500);
+    current_frame_->image_right_.set_features(right_features);
   }
   if (!current_frame_->has_matched_features()) {
     current_frame_->matches_ = matcher_.match_features(
