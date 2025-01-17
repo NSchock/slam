@@ -1,6 +1,7 @@
 #ifndef FRONTEND_H
 #define FRONTEND_H
 
+#include "backend.h"
 #include "camera.h"
 #include "feature_extractor.h"
 #include "feature_matcher.h"
@@ -19,7 +20,6 @@ enum class FrontendStatus { Init, Tracking, Lost };
  * SLAM Frontend: Perform visual odometry to estimate camera motion.
  */
 class Frontend {
-
 public:
   Frontend(std::shared_ptr<Camera> camera_left,
            std::shared_ptr<Camera> camera_right)
@@ -27,6 +27,10 @@ public:
         camera_right_{std::move(camera_right)} {}
 
   void set_map(std::shared_ptr<Map> map) { map_ = std::move(map); }
+
+  void set_backend(std::shared_ptr<Backend> backend) {
+    backend_ = std::move(backend);
+  }
 
   void set_viewer(std::shared_ptr<Viewer> viewer) {
     viewer_ = std::move(viewer);
@@ -94,6 +98,7 @@ private:
   Sophus::SE3d relative_motion_;
 
   std::shared_ptr<Map> map_;
+  std::shared_ptr<Backend> backend_;
   std::shared_ptr<Viewer> viewer_;
 
   int num_features_for_keyframe_ = 50;

@@ -13,6 +13,8 @@ Camera::Camera(const std::array<double, 12> &rectified_camera_data) {
       rectified_camera_data[5], rectified_camera_data[6],
       rectified_camera_data[8], rectified_camera_data[9],
       rectified_camera_data[10];
+  intrinsic_data_ << intrinsic_matrix_(0, 0), intrinsic_matrix_(1, 1),
+      intrinsic_matrix_(0, 2), intrinsic_matrix_(1, 2);
 
   Eigen::Vector3d translation;
   translation << rectified_camera_data[3], rectified_camera_data[7],

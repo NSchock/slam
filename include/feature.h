@@ -20,6 +20,8 @@ public:
   Feature(cv::KeyPoint keypoint, cv::Mat descriptor)
       : id_{feature_id_++}, keypoint_{keypoint}, descriptor_{descriptor} {}
 
+  cv::Point2f point() const { return keypoint_.pt; }
+
 private:
   inline static unsigned long feature_id_ = 0;
 };

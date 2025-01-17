@@ -38,11 +38,13 @@ void Slam::initialize() {
   }
 
   frontend_ = std::make_shared<Frontend>(cameras_["P0"], cameras_["P1"]);
-  // backend_ = std::make_shared<Backend>();
+  backend_ = std::make_shared<Backend>(cameras_["P0"], cameras_["P1"]);
   map_ = std::make_shared<Map>();
   viewer_ = std::make_shared<Viewer>();
 
   frontend_->set_map(map_);
+  backend_->set_map(map_);
+  frontend_->set_backend(backend_);
   viewer_->set_map(map_);
   frontend_->set_viewer(viewer_);
   initialized_ = true;

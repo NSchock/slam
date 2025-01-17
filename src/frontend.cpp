@@ -1,4 +1,5 @@
 #include "frontend.h"
+#include "backend.h"
 #include "landmark.h"
 #include "triangulate.h"
 #include <Eigen/Core>
@@ -121,6 +122,7 @@ void Frontend::insert_keyframe() {
 
   current_frame_->is_keyframe_ = true;
   map_->insert_keyframe(current_frame_);
+  backend_->optimize();
 
   // viewer_->update_map();
   std::cout << "Keyframe inserted successfully\n";
@@ -142,7 +144,7 @@ Frontend::estimate_motion(const std::vector<cv::Point3f> &landmarks,
 
   std::vector<int> inliers;
   cv::solvePnPRansac(landmarks, features, intrinsic_matrix_cv, cv::Mat(),
-                     rotation_vector, translation_vector, true, 100, 8.0, 0.99,
+                     rotation_vector, translation_vector, true, 100, 4.0, 0.99,
                      inliers);
 
   cv::Mat rotation_matrix_cv;
@@ -160,9 +162,6 @@ Frontend::estimate_motion(const std::vector<cv::Point3f> &landmarks,
 }
 
 void Frontend::triangulate() {
-  auto proj_left = camera_left_->projection_matrix();
-  auto proj_right = camera_right_->projection_matrix();
-
   for (const auto &match : current_frame_->matches_) {
     auto feature_left = match.feature_1;
     auto feature_right = match.feature_2;
@@ -181,14 +180,13 @@ void Frontend::triangulate() {
     } else {
       auto point_left = feature_left->keypoint_.pt;
       auto point_right = feature_right->keypoint_.pt;
-      auto [triangulated_point_camera, valid_triangulation] =
-          triangulate_points(proj_left, proj_right, point_left, point_right);
+      auto [triangulated_point, valid_triangulation] = triangulate_points(
+          camera_left_->projection_matrix() *
+              current_frame_->pose_world_to_camera().matrix(),
+          camera_right_->projection_matrix() *
+              current_frame_->pose_world_to_camera().matrix(),
+          point_left, point_right);
       if (valid_triangulation) {
-        // triangulate_points calculates the point in camera coordinates because
-        // we pass in camera projection matrices instead of current pose.
-        // Convert to world coordinates.
-        Eigen::Vector3d triangulated_point =
-            current_frame_->pose_camera_to_world() * triangulated_point_camera;
         landmark = std::make_shared<Landmark>(triangulated_point);
 
         feature_left->landmark_ = landmark;

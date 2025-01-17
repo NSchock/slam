@@ -1,4 +1,5 @@
 add_library(slam SHARED
+        backend.cpp
         camera.cpp
         feature_extractor.cpp
         feature_matcher.cpp
@@ -11,5 +12,4 @@ add_library(slam SHARED
         viewer.cpp
 )
 
-target_link_libraries(slam
-        ${THIRD_PARTY_LIBS})
+target_link_libraries(slam ${THIRD_PARTY_LIBS})

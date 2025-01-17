@@ -18,7 +18,6 @@ inline std::pair<Eigen::Vector3d, bool>
 triangulate_points(const Mat34 &proj_left, const Mat34 &proj_right,
                    const Point2 &point_left, const Point2 &point_right) {
   Eigen::Matrix4d A;
-  Eigen::Vector4d b = Eigen::Vector4d::Zero();
   A.row(0) = point_left.y * proj_left.row(2) - proj_left.row(1);
   A.row(1) = proj_left.row(0) - point_left.x * proj_left.row(2);
   A.row(2) = point_right.y * proj_right.row(2) - proj_right.row(1);

@@ -5,12 +5,15 @@
 #include "feature_matcher.h"
 #include "image.h"
 #include "observation.h"
+#include <Eigen/Core>
+#include <Eigen/src/Core/util/Memory.h>
 #include <memory>
 #include <opencv2/core/mat.hpp>
 #include <sophus/se3.hpp>
 
 class Frame {
 public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
   Image image_left_, image_right_;
   std::vector<Match> matches_;
   std::vector<std::shared_ptr<Landmark>> landmarks_;
@@ -64,9 +67,10 @@ public:
   }
 
 private:
-  inline static unsigned long frame_id_ = 0;
   Sophus::SE3d pose_world_to_camera_;
   Sophus::SE3d pose_camera_to_world_;
+
+  inline static unsigned long frame_id_ = 0;
 };
 
 #endif

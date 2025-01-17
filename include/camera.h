@@ -2,6 +2,7 @@
 #define CAMERA_H
 
 #include <Eigen/Core>
+#include <Eigen/src/Core/util/Memory.h>
 #include <sophus/se3.hpp>
 #include <sophus/so3.hpp>
 
@@ -9,6 +10,8 @@ using Matrix34 = Eigen::Matrix<double, 3, 4>;
 
 class Camera {
 public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+
   /**
    * Constructor for initializing Camera using rectified camera projection
    * matrix data, as given, e.g., in the Kitti dataset.
@@ -24,6 +27,8 @@ public:
    * pixel coordinates.
    */
   Eigen::Matrix3d intrinsic_matrix() const { return intrinsic_matrix_; }
+
+  Eigen::Vector4d intrinsic_data() const { return intrinsic_data_; }
 
   /**
    * Returns the extrinsic matrix, mapping from world coordinates to camera
@@ -50,10 +55,12 @@ public:
   Matrix34 projection_matrix() const { return projection_matrix_; }
 
 private:
-  Eigen::Matrix3d intrinsic_matrix_;
   Sophus::SE3d extrinsic_matrix_;
-  double baseline_;
+  Eigen::Matrix3d intrinsic_matrix_;
+  Eigen::Vector4d intrinsic_data_;
   Matrix34 projection_matrix_;
+
+  double baseline_;
 };
 
 #endif
