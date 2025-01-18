@@ -80,8 +80,7 @@ public:
 
   std::pair<Sophus::SE3d, std::vector<int>>
   estimate_motion(const std::vector<cv::Point3f> &landmarks,
-                  const std::vector<cv::Point2f> &features,
-                  Sophus::SE3d relative_motion);
+                  const std::vector<cv::Point2f> &features);
 
   void triangulate();
 

@@ -3,8 +3,9 @@
 #include <vector>
 
 void Map::insert_keyframe(std::shared_ptr<Frame> frame) {
-  keyframes_[frame->id_] = frame;
-  active_keyframes_[frame->id_] = frame;
+  keyframes_.insert({frame->id_, frame});
+  active_keyframes_.insert({frame->id_, frame});
+  current_keyframe_id_ = frame->id_;
 
   // insert_landmarks(frame->landmarks_);
 
@@ -47,23 +48,23 @@ void Map::remove_keyframe() {
       min_dist = dist;
       min_keyframe_id_ = id;
     }
-
-    // remove the closest keyframe if it is very close (distance within
-    // min_threshold) to current one, otherwise remove farthest keyframe
-    const double min_threshold = 0.2;
-    unsigned long frame_to_remove_id =
-        min_dist < min_threshold ? min_keyframe_id_ : max_keyframe_id_;
-    auto frame_to_remove = active_keyframes_[frame_to_remove_id];
-    for (const auto &observation : frame_to_remove->observations_) {
-      if (auto landmark = observation->landmark_.lock()) {
-        landmark->remove_observation(observation);
-      }
-    }
-
-    active_keyframes_.erase(frame_to_remove_id);
-
-    cleanup_landmarks();
   }
+
+  // remove the closest keyframe if it is very close (distance within
+  // min_threshold) to current one, otherwise remove farthest keyframe
+  const double min_threshold = 0.2;
+  unsigned long frame_to_remove_id =
+      min_dist < min_threshold ? min_keyframe_id_ : max_keyframe_id_;
+  auto frame_to_remove = active_keyframes_[frame_to_remove_id];
+  for (const auto &observation : frame_to_remove->observations_) {
+    if (auto landmark = observation->landmark_.lock()) {
+      landmark->remove_observation(observation);
+    }
+  }
+
+  active_keyframes_.erase(frame_to_remove_id);
+
+  cleanup_landmarks();
 }
 
 void Map::cleanup_landmarks() {

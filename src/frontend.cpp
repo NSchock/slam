@@ -72,12 +72,12 @@ void Frontend::track() {
       landmark_points.push_back(landmark_point);
       valid_landmarks.push_back(landmark);
 
-      feature_points.push_back(match.feature_2->keypoint_.pt);
+      feature_points.push_back(match.feature_2->point());
       valid_features.push_back(match.feature_2);
     }
   }
   auto [pose_estimate, inlier_indices] =
-      estimate_motion(landmark_points, feature_points, relative_motion_);
+      estimate_motion(landmark_points, feature_points);
   current_frame_->set_pose_world_to_camera(pose_estimate);
   for (auto idx : inlier_indices) {
     valid_features[idx]->landmark_ = valid_landmarks[idx];
@@ -111,14 +111,14 @@ void Frontend::insert_keyframe() {
     auto left_features =
         extractor_.extract_features(current_frame_->image_left_);
     left_features =
-        extractor_.adaptive_nonmaximal_suppression(left_features, 500);
+        extractor_.adaptive_nonmaximal_suppression(left_features, 1000);
     current_frame_->image_left_.set_features(left_features);
   }
   if (!current_frame_->has_right_features()) {
     auto right_features =
         extractor_.extract_features(current_frame_->image_right_);
     right_features =
-        extractor_.adaptive_nonmaximal_suppression(right_features, 500);
+        extractor_.adaptive_nonmaximal_suppression(right_features, 1000);
     current_frame_->image_right_.set_features(right_features);
   }
   if (!current_frame_->has_matched_features()) {
@@ -138,22 +138,23 @@ void Frontend::insert_keyframe() {
 
 std::pair<Sophus::SE3d, std::vector<int>>
 Frontend::estimate_motion(const std::vector<cv::Point3f> &landmarks,
-                          const std::vector<cv::Point2f> &features,
-                          Sophus::SE3d relative_motion) {
+                          const std::vector<cv::Point2f> &features) {
   cv::Mat rotation_vector, translation_vector;
 
   // use initial estimates for rotation and translation
-  cv::eigen2cv(relative_motion.rotationMatrix(), rotation_vector);
+  cv::eigen2cv(current_frame_->pose_world_to_camera().rotationMatrix(),
+               rotation_vector);
   cv::Rodrigues(rotation_vector, rotation_vector);
-  cv::eigen2cv(relative_motion.translation(), translation_vector);
+  cv::eigen2cv(current_frame_->pose_world_to_camera().translation(),
+               translation_vector);
 
   cv::Mat intrinsic_matrix_cv;
   cv::eigen2cv(camera_left_->intrinsic_matrix(), intrinsic_matrix_cv);
 
   std::vector<int> inliers;
   cv::solvePnPRansac(landmarks, features, intrinsic_matrix_cv, cv::Mat(),
-                     rotation_vector, translation_vector, true, 100, 4.0, 0.99,
-                     inliers);
+                     rotation_vector, translation_vector, true, 100, 8.0, 0.99,
+                     inliers, cv::SOLVEPNP_ITERATIVE);
 
   cv::Mat rotation_matrix_cv;
   Eigen::Matrix3d rotation_matrix;
@@ -165,7 +166,25 @@ Frontend::estimate_motion(const std::vector<cv::Point3f> &landmarks,
 
   // pose = world to camera
   auto estimated_pose = Sophus::SE3d(rotation_matrix, translation);
-  std::cout << "Estimated pose: " << estimated_pose.matrix3x4() << "\n";
+
+  // For debugging purposes:
+  // std::cout << "Estimated rotation: " << estimated_pose.rotationMatrix()
+  //          << "\n";
+
+  // std::cout << "Actual rotation: "
+  //           << current_frame_->real_pose_world_to_camera_.rotationMatrix()
+  //           << "\n";
+  // std::cout
+  //     << "Actual translation: "
+  //     <<
+  //     current_frame_->real_pose_world_to_camera_.rotationMatrix().inverse() *
+  //            current_frame_->real_pose_world_to_camera_.translation()
+  //     << "\n";
+  // std::cout << "Estimated translation: "
+  //           << estimated_pose.rotationMatrix().inverse() *
+  //                  estimated_pose.translation()
+  //           << "\n";
+  // std::cout << "Num inliers: " << inliers.size() << "\n";
   return {estimated_pose, inliers};
 }
 

@@ -91,13 +91,12 @@ bool Slam::step() {
   }
 
   auto frame = std::make_shared<Frame>(left_image, right_image);
-
-  // frame->set_pose_world_to_camera(poses_[current_frame_index_]);
+  frame->real_pose_world_to_camera_ = poses_[current_frame_index_];
 
   std::cout << "Current frame: " << current_frame_index_ << "\n";
-  std::cout << "Pose: " << poses_[current_frame_index_].matrix3x4() << "\n";
-  // std::cout << "Pose inverse: "
-  //           << poses_[current_frame_index_].inverse().matrix3x4() << "\n";
+  // std::cout << "Pose: " << poses_[current_frame_index_].matrix3x4() << "\n";
+  //  std::cout << "Pose inverse: "
+  //            << poses_[current_frame_index_].inverse().matrix3x4() << "\n";
 
   current_frame_index_++;
   return frontend_->add_frame(frame);

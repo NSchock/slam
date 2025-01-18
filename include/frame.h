@@ -18,6 +18,8 @@ public:
   std::vector<Match> matches_;
   std::vector<std::shared_ptr<Landmark>> landmarks_;
   std::vector<std::shared_ptr<Observation>> observations_;
+  Sophus::SE3d real_pose_world_to_camera_; // the actual ground truth pose, only
+                                           // for debugging purposes
 
   bool is_keyframe_ = false;
   unsigned long id_;
